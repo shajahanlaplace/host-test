@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartsync Utilities</title>
+    <style>
+        body {
+            font-family: "Open Sans", "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f5f7; /* Light gray background */
+            color: #333; /* Neutral text color */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #005a9e; /* Dark blue heading */
+            font-size: 32px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        .tool-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr) 2fr; /* 3 columns for links, 1 column for description */
+            gap: 20px;
+            align-items: start;
+        }
+        .tool-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+        .tool-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #005a9e; /* Dark blue buttons */
+            color: white; /* White text for buttons */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            height: 100px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .tool-item:hover {
+            background-color: #0078d4; /* Lighter blue on hover */
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .description-box {
+            grid-column: 4 / span 1;
+            background-color: #ffffff; /* White background for description box */
+            padding: 20px;
+            border: 2px solid #d9d9d9; /* Light gray border for description box */
+            border-radius: 8px;
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            font-weight: 500;
+            color: #555; /* Medium gray text for description */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .contact-info {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777; /* Light gray text for contact info */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Smartsync Utilities</h1>
+        <h5>Your smartsheet tools</h5>
+        <div class="tool-layout">
+            <!-- Tool Links -->
+            <ul class="tool-list">
+                <li><a href="Conditional Mapping.html" class="tool-item" data-desc="Populate columns in a destination sheet based on trigger conditions in a source sheet.">Conditional Mapping</a></li>
+                <li><a href="Conditional Map Multi.html" class="tool-item" data-desc="Create multiple column mappings based on trigger values in a single sheet, allowing for more dynamic and flexible updates.">Conditional Mapping - Multi</a></li>
+                <li><a href="dropdown_mapping.html" class="tool-item" data-desc="Map dropdown values dynamically from a source sheet to a destination sheet.">Dropdown Mapping Tool</a></li>
+                <li><a href="data_aggregator.html" class="tool-item" data-desc="Combine and consolidate data from multiple sheets into a master sheet with advanced options like sorting and deduplication.">Multi-Sheet Data Aggregator</a></li>
+                <li><a href="dependency_tracker.html" class="tool-item" data-desc="Link and synchronize rows across multiple sheets to maintain consistent data in real-time.">Cross-Sheet Dependency Tracker</a></li>
+                <li><a href="time_calculator.html" class="tool-item" data-desc="Perform time-based calculations like elapsed time and remaining time directly in a sheet.">Time-Based Calculation Tool</a></li>
+                <li><a href="report_to_sheet.html" class="tool-item" data-desc="Transfer data from Smartsheet reports into destination sheets with column mapping and filtering options.">Report to Sheet Transfer Tool</a></li>
+            </ul>
+
+            <!-- Dynamic Description Box -->
+            <div class="description-box" id="description-box">
+                <p>Hover over a tool to see its description here.</p>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+            <p>For more customized tools, contact: support@smartsheet.com</p>
+            <p>For any support or to report a bug, email: bugs@smartsheet.com</p>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to dynamically update the description box
+        const toolItems = document.querySelectorAll('.tool-item');
+        const descriptionBox = document.getElementById('description-box');
+
+        toolItems.forEach(item => {
+            item.addEventListener('mouseover', () => {
+                const description = item.getAttribute('data-desc');
+                descriptionBox.innerHTML = `<p>${description}</p>`;
+            });
+
+            item.addEventListener('mouseout', () => {
+                descriptionBox.innerHTML = `<p>Hover over a tool to see its description here.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>

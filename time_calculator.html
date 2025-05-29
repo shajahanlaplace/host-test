@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Calculation Tool</title>
+    <style>
+        body {
+            font-family: "Open Sans", "Segoe UI", sans-serif; /* Smartsheet font */
+            margin: 0;
+            padding: 0;
+            background-color: #f3f5f7; /* Smartsheet's light gray background */
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff; /* White container background */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for modern look */
+        }
+        h1 {
+            text-align: center;
+            color: #005a9e; /* Smartsheet's dark blue */
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        /* Back to Index Button */
+        .back-button-container {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        .back-button {
+            background-color: #005a9e; /* Smartsheet's dark blue */
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #0078d4; /* Smartsheet's lighter blue for hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect on hover */
+        }
+        .divider {
+            border-bottom: 2px solid #d9d9d9; /* Smartsheet's light gray for dividers */
+            margin: 20px 0;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .section select, .section input, .section button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #d9d9d9; /* Smartsheet's light gray border */
+            border-radius: 4px;
+        }
+        .submit-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .submit-section button {
+            background-color: #005a9e; /* Smartsheet's dark blue */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .submit-section button:hover {
+            background-color: #0078d4; /* Smartsheet's lighter blue for hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Back to Index Button -->
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Index Page</a>
+        </div>
+        
+        <h1>Time Calculation Tool</h1>
+
+        <!-- Sheet Selection Section -->
+        <div class="section">
+            <label for="sheet-selection">Select Sheet</label>
+            <select id="sheet-selection">
+                <option value="">Choose a Sheet</option>
+                <option value="Sheet1">Sheet 1</option>
+                <option value="Sheet2">Sheet 2</option>
+                <!-- More options can be dynamically loaded -->
+            </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Input Columns Section -->
+        <div class="section">
+            <h2 style="color: #005a9e;">Input Columns</h2>
+            <label for="start-time-column">Start Time Column</label>
+            <select id="start-time-column">
+                <option value="">Select Start Time Column</option>
+                <option value="start_time">Start Time</option>
+                <option value="beginning_time">Beginning Time</option>
+            </select>
+
+            <label for="end-time-column">End Time Column</label>
+            <select id="end-time-column">
+                <option value="">Select End Time Column</option>
+                <option value="end_time">End Time</option>
+                <option value="deadline_time">Deadline Time</option>
+            </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Output Columns Section -->
+        <div class="section">
+            <h2 style="color: #005a9e;">Output Columns</h2>
+            <label for="consumed-time-column">Consumed Time Column</label>
+            <select id="consumed-time-column">
+                <option value="">Select Consumed Time Column</option>
+                <option value="consumed_time">Consumed Time</option>
+                <option value="elapsed_time">Elapsed Time</option>
+            </select>
+
+            <label for="balance-time-column">Balance Time Column</label>
+            <select id="balance-time-column">
+                <option value="">Select Balance Time Column</option>
+                <option value="balance_time">Balance Time</option>
+                <option value="remaining_time">Remaining Time</option>
+            </select>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <button type="button" onclick="runTimeCalculations()">Run Calculations</button>
+        </div>
+    </div>
+
+    <script>
+        function runTimeCalculations() {
+            const sheetSelection = document.getElementById('sheet-selection').value;
+            const startTimeColumn = document.getElementById('start-time-column').value;
+            const endTimeColumn = document.getElementById('end-time-column').value;
+            const consumedTimeColumn = document.getElementById('consumed-time-column').value;
+            const balanceTimeColumn = document.getElementById('balance-time-column').value;
+
+            if (!sheetSelection || !startTimeColumn || !endTimeColumn || !consumedTimeColumn || !balanceTimeColumn) {
+                alert("Please select the sheet and all required columns.");
+                return;
+            }
+
+            // Placeholder: Display settings for debugging (replace with actual logic)
+            alert(`
+                Selected Sheet: ${sheetSelection}
+                Start Time Column: ${startTimeColumn}
+                End Time Column: ${endTimeColumn}
+                Consumed Time Column: ${consumedTimeColumn}
+                Balance Time Column: ${balanceTimeColumn}
+
+                Calculations will now be performed within the selected sheet.
+            `);
+
+            // Add backend integration here to perform calculations in Smartsheet
+        }
+    </script>
+</body>
+</html>

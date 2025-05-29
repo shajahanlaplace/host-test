@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cross-Sheet Conditional Transfer</title>
+  <style>
+    body {
+      font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #f3f3f3;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #0072C6;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      background: #0072C6;
+      color: white;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #005a9e;
+    }
+
+    .flow-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 15px;
+      background-color: #fff;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .block {
+      flex: 1;
+      min-width: 250px;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .block h4 {
+      margin: 0 0 12px;
+      color: #0072C6;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .block label {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .block select,
+    .block input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      background-color: white;
+      box-sizing: border-box;
+    }
+
+    .trigger-container {
+      padding: 12px;
+      border: 1px solid #0072C6;
+      border-radius: 6px;
+      background: #eef7ff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bottom-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #successMessage {
+      display: none;
+      color: green;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .value-input,
+    .value-label {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cross-Sheet Conditional Transfer</h1>
+
+    <div class="flow-container" id="columnContainer">
+      <div class="row">
+        <!-- Source Sheet -->
+        <div class="block source-block">
+          <h4>Source Sheet</h4>
+          <label>Sheet</label>
+          <select>
+            <option>Sheet1</option>
+            <option>Sheet2</option>
+          </select>
+          <label>Column</label>
+          <select>
+            <option>Column A</option>
+            <option>Column B</option>
+          </select>
+        </div>
+
+        <!-- Destination Sheet -->
+        <div class="block destination-block">
+          <h4>Destination Sheet</h4>
+          <label>Sheet</label>
+          <select>
+            <option>Sheet1</option>
+            <option>Sheet2</option>
+          </select>
+          <label>Column</label>
+          <select>
+            <option>Column A</option>
+            <option>Column B</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Add Columns Button -->
+      <div class="bottom-buttons">
+        <button id="addColumnsBtn" onclick="addColumns()">➕ Add Columns</button>
+      </div>
+    </div>
+
+    <!-- Trigger Column & Condition -->
+    <div class="trigger-container">
+      <h4>Trigger Condition</h4>
+      <label>Trigger Column</label>
+      <select>
+        <option>Column A</option>
+        <option>Column B</option>
+      </select>
+      <label>Condition</label>
+      <select class="condition-select" onchange="handleConditionChange(this)">
+        <option>=</option>
+        <option>!=</option>
+        <option>&gt;</option>
+        <option>&lt;</option>
+        <option>Contains</option>
+        <option>Does not contain</option>
+        <option>Starts with</option>
+        <option>Ends with</option>
+        <option>Is blank</option>
+        <option>Is not blank</option>
+        <option>Is date</option>
+        <option>Is not date</option>
+        <option>Is number</option>
+        <option>Is not number</option>
+        <option>Is in the past</option>
+        <option>Is in the future</option>
+      </select>
+      <label class="value-label">Trigger Value</label>
+      <input type="text" class="value-input" placeholder="Enter value" />
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage">✅ Mapping Successful!</div>
+
+    <!-- Buttons -->
+    <div class="bottom-buttons">
+      <button onclick="handleMapping()">Map</button>
+      <button onclick="window.location.href='index.html'">Back to Index</button>
+    </div>
+  </div>
+
+  <script>
+    let columnCount = 1;
+
+    function addColumns() {
+      columnCount++;
+      const container = document.getElementById("columnContainer");
+
+      const newRow = document.createElement("div");
+      newRow.classList.add("row");
+
+      newRow.innerHTML = `
+        <div class="block source-block">
+          <h4>Source Column ${columnCount}</h4>
+          <label>Column</label>
+          <select>
+            <option>Column A</option>
+            <option>Column B</option>
+          </select>
+        </div>
+
+        <div class="block destination-block">
+          <h4>Destination Column ${columnCount}</h4>
+          <label>Column</label>
+          <select>
+            <option>Column A</option>
+            <option>Column B</option>
+          </select>
+        </div>
+      `;
+
+      container.appendChild(newRow);
+    }
+
+    function handleConditionChange(selectElement) {
+      const condition = selectElement.value;
+      const block = selectElement.closest(".trigger-container");
+      const input = block.querySelector(".value-input");
+      const label = block.querySelector(".value-label");
+
+      const noValueNeeded = [
+        "Is blank", "Is not blank",
+        "Is date", "Is not date",
+        "Is number", "Is not number"
+      ];
+
+      if (noValueNeeded.includes(condition)) {
+        input.style.display = "none";
+        label.style.display = "none";
+        input.value = "";
+      } else {
+        input.style.display = "block";
+        label.style.display = "block";
+      }
+    }
+
+    function handleMapping() {
+      document.getElementById("addColumnsBtn").disabled = true;
+      document.getElementById("successMessage").style.display = "block";
+    }
+  </script>
+</body>
+</html>

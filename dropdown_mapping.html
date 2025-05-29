@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Sheet Mapping</title>
+    <style>
+        body {
+            font-family: "Open Sans", "Segoe UI", sans-serif; /* Smartsheet font */
+            margin: 0;
+            padding: 0;
+            background-color: #f3f5f7; /* Smartsheet's light gray background */
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff; /* White container background */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for modern look */
+        }
+        h1 {
+            text-align: center;
+            color: #005a9e; /* Smartsheet's dark blue */
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        /* Back to Index Button */
+        .back-button-container {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        .back-button {
+            background-color: #005a9e; /* Smartsheet's dark blue */
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #0078d4; /* Smartsheet's lighter blue for hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect on hover */
+        }
+        /* Mapping Tile Styles */
+        .mapping-tile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #d9d9d9; /* Smartsheet's light gray border */
+            padding: 20px; /* Better spacing */
+            margin-bottom: 25px; /* Space between tiles */
+            border-radius: 8px;
+            background-color: #f3f5f7; /* Smartsheet's light gray for tiles */
+            animation: fadeIn 0.5s ease-in-out; /* Animation for visual appeal */
+        }
+        .column-group {
+            width: 45%;
+        }
+        .column-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .column-group select {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #d9d9d9; /* Smartsheet's light gray border */
+            border-radius: 4px;
+        }
+        .mapping-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0; /* Ensure the button doesn’t shrink */
+        }
+        .mapping-actions button {
+            padding: 8px 15px; /* Button size */
+            font-size: 14px; /* Consistent height */
+            color: white;
+            background-color: #005a9e; /* Smartsheet's dark blue */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .mapping-actions button:hover {
+            background-color: #0078d4; /* Smartsheet's lighter blue for hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+        /* Add Mapping Button */
+        .add-mapping {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .add-mapping button {
+            background-color: #005a9e; /* Smartsheet's dark blue */
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .add-mapping button:hover {
+            background-color: #0078d4; /* Smartsheet's lighter blue for hover */
+            transform: scale(1.05); /* Slight zoom-in effect */
+        }
+        .add-mapping button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        /* Keyframe Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Back to Index Button -->
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Index Page</a>
+        </div>
+        
+        <h1>Improved Dropdown Mapping</h1>
+        <div id="mappings-container">
+            <!-- Initial Mapping -->
+            <div class="mapping-tile">
+                <div class="column-group">
+                    <label for="source-sheet">Source Sheet</label>
+                    <select id="source-sheet">
+                        <option value="">Select a sheet</option>
+                        <option value="1">Sheet 1</option>
+                        <option value="2">Sheet 2</option>
+                    </select>
+
+                    <label for="source-column">Source Column</label>
+                    <select id="source-column">
+                        <option value="">Select a column</option>
+                    </select>
+                </div>
+                <div class="column-group">
+                    <label for="destination-sheet">Destination Sheet</label>
+                    <select id="destination-sheet">
+                        <option value="">Select a sheet</option>
+                        <option value="1">Sheet 1</option>
+                        <option value="2">Sheet 2</option>
+                    </select>
+
+                    <label for="destination-column">Destination Column</label>
+                    <select id="destination-column">
+                        <option value="">Select a column</option>
+                    </select>
+                </div>
+                <div class="mapping-actions">
+                    <button>Map</button>
+                </div>
+            </div>
+        </div>
+        <div class="add-mapping">
+            <button id="add-mapping-btn" onclick="addMapping()">Add Another Mapping</button>
+        </div>
+    </div>
+
+    <script>
+        let mappingCount = 1; // Tracks the number of mappings
+
+        function addMapping() {
+            if (mappingCount >= 3) {
+                alert("You can only add up to 3 mappings.");
+                document.getElementById('add-mapping-btn').disabled = true; // Disable button after limit
+                return;
+            }
+            mappingCount++;
+
+            const container = document.getElementById('mappings-container');
+            const newMapping = document.createElement('div');
+            newMapping.className = 'mapping-tile';
+            newMapping.innerHTML = `
+                <div class="column-group">
+                    <label for="source-sheet-${mappingCount}">Source Sheet</label>
+                    <select id="source-sheet-${mappingCount}">
+                        <option value="">Select a sheet</option>
+                        <option value="1">Sheet 1</option>
+                        <option value="2">Sheet 2</option>
+                    </select>
+
+                    <label for="source-column-${mappingCount}">Source Column</label>
+                    <select id="source-column-${mappingCount}">
+                        <option value="">Select a column</option>
+                    </select>
+                </div>
+                <div class="column-group">
+                    <label for="destination-sheet-${mappingCount}">Destination Sheet</label>
+                    <select id="destination-sheet-${mappingCount}">
+                        <option value="">Select a sheet</option>
+                        <option value="1">Sheet 1</option>
+                        <option value="2">Sheet 2</option>
+                    </select>
+
+                    <label for="destination-column-${mappingCount}">Destination Column</label>
+                    <select id="destination-column-${mappingCount}">
+                        <option value="">Select a column</option>
+                    </select>
+                </div>
+                <div class="mapping-actions">
+                    <button>Map</button>
+                </div>
+            `;
+            container.appendChild(newMapping);
+
+            if (mappingCount === 3) {
+                document.getElementById('add-mapping-btn').disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>

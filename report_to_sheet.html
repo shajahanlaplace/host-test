@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report to Sheet Transfer Tool</title>
+    <style>
+        body {
+            font-family: "Open Sans", "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f5f7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #005a9e;
+            font-weight: 700;
+        }
+        .back-button-container {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        .back-button {
+            background-color: #005a9e;
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #0078d4;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .mapping-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #f3f5f7;
+            border-radius: 8px;
+            border: 1px solid #d9d9d9;
+        }
+        .mapping-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-right: 10px;
+        }
+        .mapping-group select {
+            margin-bottom: 10px;
+        }
+        .add-mapping {
+            margin-top: 10px;
+            text-align: right;
+        }
+        .submit-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">Back to Index Page</a>
+        </div>
+        
+        <h1>Report to Sheet Transfer Tool</h1>
+
+        <div class="section">
+            <label for="source-report">Source Report</label>
+            <select id="source-report">
+                <option value="">Select Source Report</option>
+                <option value="report1">Report 1</option>
+                <option value="report2">Report 2</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <label for="destination-sheet">Destination Sheet</label>
+            <select id="destination-sheet">
+                <option value="">Select Destination Sheet</option>
+                <option value="sheet1">Sheet 1</option>
+                <option value="sheet2">Sheet 2</option>
+            </select>
+        </div>
+
+        <div id="mapping-container">
+            <h2 style="color: #005a9e;">Column Mappings</h2>
+            <div class="mapping-row">
+                <div class="mapping-group">
+                    <label for="report-column">Report Column</label>
+                    <select class="report-column">
+                        <option value="">Select Report Column</option>
+                        <option value="column1">Column 1</option>
+                        <option value="column2">Column 2</option>
+                    </select>
+                </div>
+                <div class="mapping-group">
+                    <label for="sheet-column">Sheet Column</label>
+                    <select class="sheet-column">
+                        <option value="">Select Sheet Column</option>
+                        <option value="columnA">Column A</option>
+                        <option value="columnB">Column B</option>
+                    </select>
+                </div>
+                <button type="button" onclick="removeRow(this)" style="background-color: #0078d4; color: white;">-</button>
+            </div>
+        </div>
+
+        <div class="add-mapping">
+            <button type="button" onclick="addMappingRow()">Add Another Mapping</button>
+        </div>
+
+        <div class="section">
+            <h2 style="color: #005a9e;">Options</h2>
+            <label><input type="checkbox" id="append-data"> Append Data</label>
+            <label><input type="checkbox" id="overwrite-data"> Overwrite Existing Data</label>
+        </div>
+
+        <div class="submit-section">
+            <button type="button" onclick="submitReportToSheet()">Transfer Data</button>
+        </div>
+    </div>
+
+    <script>
+        function addMappingRow() {
+            const container = document.getElementById('mapping-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'mapping-row';
+            newRow.innerHTML = `
+                <div class="mapping-group">
+                    <label for="report-column">Report Column</label>
+                    <select class="report-column">
+                        <option value="">Select Report Column</option>
+                        <option value="column1">Column 1</option>
+                        <option value="column2">Column 2</option>
+                    </select>
+                </div>
+                <div class="mapping-group">
+                    <label for="sheet-column">Sheet Column</label>
+                    <select class="sheet-column">
+                        <option value="">Select Sheet Column</option>
+                        <option value="columnA">Column A</option>
+                        <option value="columnB">Column B</option>
+                    </select>
+                </div>
+                <button type="button" onclick="removeRow(this)" style="background-color: #0078d4; color: white;">-</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeRow(button) {
+            button.parentElement.remove();
+        }
+
+        function submitReportToSheet() {
+            const sourceReport = document.getElementById('source-report').value;
+            const destinationSheet = document.getElementById('destination-sheet').value;
+            const mappings = Array.from(document.querySelectorAll('.mapping-row')).map(row => ({
+                reportColumn: row.querySelector('.report-column').value,
+                sheetColumn: row.querySelector('.sheet-column').value
+            }));
+
+            console.log("Submitting Data:", { sourceReport, destinationSheet, mappings });
+            
+            alert("Data Transfer Process Initiated!");
+        }
+    </script>
+</body>
+</html>

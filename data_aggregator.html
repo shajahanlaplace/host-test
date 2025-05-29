@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multi-Sheet Data Aggregator</title>
+    <style>
+        body {
+            font-family: "Open Sans", "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f5f7;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #005a9e;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .section select, .section input, .section button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section select:focus, .section input:focus, .section button:focus {
+            border-color: #005a9e;
+            box-shadow: 0 0 4px #005a9e;
+            outline: none;
+        }
+        .mapping-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f3f5f7;
+            border-radius: 8px;
+            border: 1px solid #d9d9d9;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .mapping-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+            max-width: 250px;
+        }
+        .mapping-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .mapping-row > button.add-column-btn {
+            align-self: flex-end;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            height: fit-content;
+            margin-left: auto;
+            white-space: nowrap;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .mapping-row > button.add-column-btn:hover {
+            background-color: #005a9e;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .add-mapping {
+            margin-bottom: 20px;
+        }
+        .add-mapping button {
+            background-color: #005a9e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .add-mapping button:hover {
+            background-color: #0078d4;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .aggregation-options {
+            margin-top: 20px;
+        }
+        .aggregation-options label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .aggregation-options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .submit-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .submit-section button, .back-button {
+            background-color: #005a9e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .submit-section button:hover, .back-button:hover {
+            background-color: #0078d4;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .submit-section button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .submit-section button:disabled:hover {
+            background-color: #cccccc;
+            box-shadow: none;
+        }
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 2px;
+            margin-bottom: 5px;
+            display: none;
+            font-weight: normal;
+        }
+        .reference-column.error {
+            border-color: #d32f2f;
+            box-shadow: 0 0 4px rgba(211, 47, 47, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multi-Sheet Data Aggregator</h1>
+        
+        <!-- Debug panel -->
+        <div id="debug" class="debug" style="display: none;">
+            <div>Events working: <span id="events-status">Testing...</span></div>
+            <div>Reference columns: <span id="ref-cols-count">0</span></div>
+            <div>Submit enabled: <span id="submit-status">false</span></div>
+        </div>
+
+        <!-- Source Sheets and Columns Section -->
+        <div id="source-container">
+            <h2 style="color: #005a9e;">Source Sheets and Columns</h2>
+            <!-- First Source Row -->
+            <div class="mapping-row">
+                <div class="mapping-group">
+                    <label>Source Sheet</label>
+                    <select class="source-sheet">
+                        <option value="">Select Source Sheet</option>
+                        <option value="1">Source Sheet 1</option>
+                        <option value="2">Source Sheet 2</option>
+                    </select>
+                </div>
+                <div class="mapping-group reference-column-group">
+                    <label>Reference Column</label>
+                    <select class="reference-column">
+                        <option value="">Select Reference Column</option>
+                        <option value="ref1">Reference Column 1</option>
+                        <option value="ref2">Reference Column 2</option>
+                    </select>
+                    <div class="error-message">Reference columns must match</div>
+                </div>
+                <button type="button" class="add-column-btn">+ Add More Columns</button>
+            </div>
+        </div>
+
+        <div class="add-mapping">
+            <button type="button" id="add-source-btn">Add Another Source</button>
+        </div>
+
+        <!-- Aggregation Options -->
+        <div class="aggregation-options">
+            <h2 style="color: #005a9e;">Aggregation Options</h2>
+            <label><input type="checkbox" id="remove-duplicates"> Remove Duplicates</label>
+            <label><input type="checkbox" id="sort-data"> Sort Data</label>
+            <label for="sort-method">Sort By:</label>
+            <select id="sort-method">
+                <option value="">Select Sort Method</option>
+                <option value="date">Date</option>
+                <option value="alphabetical">Alphabetical</option>
+            </select>
+            <label><input type="checkbox" id="add-tags"> Add Tags to Rows</label>
+            <label for="tag-column">Tag Column Name:</label>
+            <input type="text" id="tag-column" placeholder="Enter Tag Column Name" />
+        </div>
+
+        <!-- Destination Master Sheet -->
+        <div class="section">
+            <h2 style="color: #005a9e;">Destination Master Sheet</h2>
+            <label for="destination-sheet">Master Destination Sheet</label>
+            <select id="destination-sheet">
+                <option value="">Select Destination Sheet</option>
+                <option value="1">Master Sheet 1</option>
+                <option value="2">Master Sheet 2</option>
+            </select>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <button type="button" id="submit-btn" disabled>Submit Aggregator</button>
+            <button type="button" id="toggle-debug" style="background-color: #666; margin-left: 10px;">Toggle Debug</button>
+        </div>
+
+        <!-- Back to Index Button -->
+        <div class="submit-section">
+            <a href="index.html" class="back-button">Back to Index Page</a>
+        </div>
+    </div>
+
+    <script>
+        // Debug functions
+        function updateDebug() {
+            const debugPanel = document.getElementById('debug');
+            if (debugPanel.style.display !== 'none') {
+                const refCols = document.querySelectorAll('.reference-column');
+                const submitBtn = document.getElementById('submit-btn');
+                
+                document.getElementById('events-status').textContent = 'OK';
+                document.getElementById('ref-cols-count').textContent = refCols.length;
+                document.getElementById('submit-status').textContent = !submitBtn.disabled;
+            }
+        }
+
+        // Toggle debug panel
+        document.getElementById('toggle-debug').addEventListener('click', function() {
+            const debugPanel = document.getElementById('debug');
+            debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+            updateDebug();
+        });
+
+        // Function to update labels of source columns dynamically based on count in that mapping-row
+        function updateSourceColumnLabels(mappingRow) {
+            const sourceColumnGroups = mappingRow.querySelectorAll('.source-column-group');
+            sourceColumnGroups.forEach((group, idx) => {
+                const label = group.querySelector('label');
+                label.textContent = `Source Column ${idx + 1}`;
+            });
+        }
+
+        // Function to validate if all reference columns have the same value
+        function validateReferenceColumns() {
+            const referenceColumns = document.querySelectorAll('.reference-column');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            console.log('Validating reference columns:', referenceColumns.length);
+            
+            // Clear all previous error states
+            referenceColumns.forEach(select => {
+                select.classList.remove('error');
+                const errorMsg = select.parentNode.querySelector('.error-message');
+                if (errorMsg) {
+                    errorMsg.style.display = 'none';
+                }
+            });
+            
+            if (referenceColumns.length === 0) {
+                submitBtn.disabled = true;
+                updateDebug();
+                return;
+            }
+
+            // Get all selected reference column values
+            const selectedValues = Array.from(referenceColumns)
+                .map(select => select.value)
+                .filter(value => value !== '');
+
+            console.log('Selected values:', selectedValues);
+
+            // If no values are selected, disable button
+            if (selectedValues.length === 0) {
+                submitBtn.disabled = true;
+                updateDebug();
+                return;
+            }
+
+            // Check if all selected values are the same
+            const firstValue = selectedValues[0];
+            const allSame = selectedValues.every(value => value === firstValue);
+            
+            console.log('All same:', allSame, 'Selected count:', selectedValues.length, 'Total count:', referenceColumns.length);
+
+            // If not all same, show error messages
+            if (!allSame || selectedValues.length !== referenceColumns.length) {
+                referenceColumns.forEach(select => {
+                    if (select.value !== '' && select.value !== firstValue) {
+                        select.classList.add('error');
+                        const errorMsg = select.parentNode.querySelector('.error-message');
+                        if (errorMsg) {
+                            errorMsg.style.display = 'block';
+                        }
+                    } else if (select.value === '') {
+                        // Also show error for empty selections when others are filled
+                        if (selectedValues.length > 0) {
+                            select.classList.add('error');
+                            const errorMsg = select.parentNode.querySelector('.error-message');
+                            if (errorMsg) {
+                                errorMsg.textContent = 'Please select a reference column';
+                                errorMsg.style.display = 'block';
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Enable button only if all reference columns have the same value and there's at least one selection
+            submitBtn.disabled = !(allSame && selectedValues.length === referenceColumns.length);
+            
+            updateDebug();
+        }
+
+        // Initialize the app
+        function initializeApp() {
+            console.log('Initializing app...');
+            
+            // Add event listener for "Add Another Source" button
+            const addSourceBtn = document.getElementById('add-source-btn');
+            console.log('Add source button found:', !!addSourceBtn);
+            
+            addSourceBtn.addEventListener('click', function() {
+                console.log('Add source button clicked');
+                const container = document.getElementById('source-container');
+                const newRow = document.createElement('div');
+                newRow.className = 'mapping-row';
+                newRow.innerHTML = `
+                    <div class="mapping-group">
+                        <label>Source Sheet</label>
+                        <select class="source-sheet">
+                            <option value="">Select Source Sheet</option>
+                            <option value="1">Source Sheet 1</option>
+                            <option value="2">Source Sheet 2</option>
+                        </select>
+                    </div>
+                    <div class="mapping-group reference-column-group">
+                        <label>Reference Column</label>
+                        <select class="reference-column">
+                            <option value="">Select Reference Column</option>
+                            <option value="ref1">Reference Column 1</option>
+                            <option value="ref2">Reference Column 2</option>
+                        </select>
+                        <div class="error-message">Reference columns must match</div>
+                    </div>
+                    <button type="button" class="add-column-btn">+ Add More Columns</button>
+                `;
+                container.appendChild(newRow);
+                console.log('New source row added');
+                
+                // Re-validate after adding new source
+                validateReferenceColumns();
+            });
+
+            // Use event delegation for all dynamic events on the source container
+            const sourceContainer = document.getElementById('source-container');
+            console.log('Source container found:', !!sourceContainer);
+            
+            sourceContainer.addEventListener('click', function(event) {
+                console.log('Container click detected:', event.target.className);
+                
+                if (event.target && event.target.classList.contains('add-column-btn')) {
+                    console.log('Add column button clicked');
+                    const mappingRow = event.target.closest('.mapping-row');
+                    const newGroup = document.createElement('div');
+                    newGroup.className = 'mapping-group source-column-group';
+                    newGroup.innerHTML = `
+                        <label>Source Column</label>
+                        <select class="source-column">
+                            <option value="">Select Source Column</option>
+                            <option value="1">Source Column 1</option>
+                            <option value="2">Source Column 2</option>
+                        </select>
+                    `;
+                    
+                    // Insert before the +Add More Columns button
+                    mappingRow.insertBefore(newGroup, event.target);
+                    
+                    // Update the labels of all source columns dynamically
+                    updateSourceColumnLabels(mappingRow);
+                    console.log('New column added');
+                }
+            });
+
+            // Use event delegation for reference column changes
+            sourceContainer.addEventListener('change', function(event) {
+                console.log('Container change detected:', event.target.className);
+                
+                if (event.target && event.target.classList.contains('reference-column')) {
+                    console.log('Reference column changed:', event.target.value);
+                    validateReferenceColumns();
+                }
+            });
+
+            // Submit aggregator functionality
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                // Collect all source mappings
+                const sources = [];
+                document.querySelectorAll('#source-container .mapping-row').forEach((row, index) => {
+                    const sourceSheet = row.querySelector('.source-sheet').value;
+                    const referenceColumn = row.querySelector('.reference-column').value;
+                    const sourceColumns = Array.from(row.querySelectorAll('.source-column')).map(select => select.value);
+                    
+                    sources.push({
+                        containerIndex: index + 1,
+                        sourceSheet,
+                        referenceColumn,
+                        sourceColumns
+                    });
+                });
+                
+                console.log('Aggregated Sources:', sources);
+                alert("Aggregator settings submitted! Check console for data.");
+            });
+
+            // Initial validation
+            validateReferenceColumns();
+            console.log('App initialized successfully');
+        }
+
+        // Wait for DOM to be ready and then initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
